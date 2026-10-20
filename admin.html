@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Navodaya Forever — Admin</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #172033;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1565c0, #0d47a1);
+      color: white;
+      padding: 25px;
+    }
+
+    header h1 {
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 25px auto;
+      padding: 0 18px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 18px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    #loginBtn {
+      background: white;
+      border: 1px solid #ddd;
+    }
+
+    #logoutBtn {
+      background: #e53935;
+      color: white;
+      display: none;
+    }
+
+    #loginSection {
+      text-align: center;
+      margin-top: 80px;
+    }
+
+    #loginSection h2 {
+      margin-bottom: 10px;
+    }
+
+    #loginSection p {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    #googleLogin {
+      background: #1565c0;
+      color: white;
+      padding: 14px 25px;
+      font-size: 16px;
+    }
+
+    #dashboard {
+      display: none;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stat {
+      background: white;
+      border-radius: 15px;
+      padding: 22px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .stat h3 {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .stat strong {
+      font-size: 30px;
+      color: #1565c0;
+    }
+
+    .search-box {
+      background: white;
+      padding: 18px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    #searchInput:focus {
+      border-color: #1565c0;
+    }
+
+    .response-card {
+      background: white;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      overflow: hidden;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .response-header {
+      padding: 18px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .response-header:hover {
+      background: #f8fbff;
+    }
+
+    .person-name {
+      font-size: 18px;
+      font-weight: bold;
+      color: #1565c0;
+    }
+
+    .person-info {
+      margin-top: 5px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .answers {
+      display: none;
+      border-top: 1px solid #eee;
+      padding: 20px;
+    }
+
+    .answer {
+      padding: 13px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .answer:last-child {
+      border-bottom: none;
+    }
+
+    .question {
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    .answer-value {
+      color: #555;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    #loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    #errorBox {
+      display: none;
+      background: #ffebee;
+      color: #b71c1c;
+      padding: 18px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+    }
+
+    #empty {
+      display: none;
+      text-align: center;
+      padding: 50px;
+      background: white;
+      border-radius: 15px;
+      color: #666;
+    }
+
+    @media (max-width: 800px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 500px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 23px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="container">
+    <h1>Navodaya Forever</h1>
+    <p>Survey Admin Dashboard</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- LOGIN -->
+  <div id="loginSection">
+
+    <h2>Admin Access</h2>
+
+    <p>
+      Sign in with the authorized Google account to view survey responses.
+    </p>
+
+    <button id="googleLogin">
+      Sign in with Google
+    </button>
+
+  </div>
+
+
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+
+    <div class="topbar">
+
+      <div>
+        <h2>Survey Responses</h2>
+        <p id="loggedInUser"></p>
+      </div>
+
+      <button id="logoutBtn">
+        Logout
+      </button>
+
+    </div>
+
+
+    <div id="errorBox"></div>
+
+
+    <!-- STATS -->
+    <div class="stats">
+
+      <div class="stat">
+        <h3>Total Responses</h3>
+        <strong id="totalResponses">0</strong>
+      </div>
+
+      <div class="stat">
+        <h3>JNVs</h3>
+        <strong id="totalJNVs">0</strong>
+      </div>
+
+      <div class="stat">
+        <h3>Batches</h3>
+        <strong id="totalBatches">0</strong>
+      </div>
+
+      <div class="stat">
+        <h3>Cities</h3>
+        <strong id="totalCities">0</strong>
+      </div>
+
+    </div>
+
+
+    <!-- SEARCH -->
+    <div class="search-box">
+
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search by name, JNV, batch or city..."
+      >
+
+    </div>
+
+
+    <div id="loading">
+      Loading responses...
+    </div>
+
+    <div id="empty">
+      <h3>No responses found</h3>
+      <p>There are currently no survey responses to display.</p>
+    </div>
+
+    <div id="responses"></div>
+
+  </div>
+
+</div>
+
+
+<script type="module">
+
+  import {
+    initializeApp
+  } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+
+
+  import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    query,
+    orderBy
+  } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+
+  // ==========================================
+  // FIREBASE CONFIG
+  // ==========================================
+
+  const firebaseConfig = {
+
+    apiKey: "AIzaSyC9BrYEnGuMPBT3_JhJAH1alEFUFiZ9bfQ",
+
+    authDomain: "navodaya-survey.firebaseapp.com",
+
+    projectId: "navodaya-survey",
+
+    storageBucket: "navodaya-survey.firebasestorage.app",
+
+    messagingSenderId: "686048593802",
+
+    appId: "1:686048593802:web:9eac70ce31ab545f556a73"
+
+  };
+
+
+  const app = initializeApp(firebaseConfig);
+
+  const auth = getAuth(app);
+
+  const db = getFirestore(app);
+
+  const provider = new GoogleAuthProvider();
+
+
+  // ==========================================
+  // ADMIN EMAIL
+  // ==========================================
+
+  const ADMIN_EMAIL = "sshivakumarck@gmail.com";
+
+
+  // ==========================================
+  // ELEMENTS
+  // ==========================================
+
+  const loginSection =
+    document.getElementById("loginSection");
+
+  const dashboard =
+    document.getElementById("dashboard");
+
+  const googleLogin =
+    document.getElementById("googleLogin");
+
+  const logoutBtn =
+    document.getElementById("logoutBtn");
+
+  const loggedInUser =
+    document.getElementById("loggedInUser");
+
+  const responsesContainer =
+    document.getElementById("responses");
+
+  const loading =
+    document.getElementById("loading");
+
+  const empty =
+    document.getElementById("empty");
+
+  const errorBox =
+    document.getElementById("errorBox");
+
+  const searchInput =
+    document.getElementById("searchInput");
+
+
+  let allResponses = [];
+
+
+  // ==========================================
+  // GOOGLE LOGIN
+  // ==========================================
+
+  googleLogin.addEventListener("click", async () => {
+
+    try {
+
+      await signInWithPopup(auth, provider);
+
+    } catch (error) {
+
+      console.error("Google Login Error:", error);
+
+      alert(
+        "Login failed!\n\n" +
+        "Code: " + error.code + "\n\n" +
+        "Message: " + error.message
+      );
+
+    }
+
+  });
+
+
+  // ==========================================
+  // AUTH STATE
+  // ==========================================
+
+  onAuthStateChanged(auth, async (user) => {
+
+    if (!user) {
+
+      loginSection.style.display = "block";
+
+      dashboard.style.display = "none";
+
+      return;
+
+    }
+
+
+    console.log("Logged in:", user.email);
+
+
+    // ========================================
+    // CHECK ADMIN
+    // ========================================
+
+    if (
+      user.email.toLowerCase() !==
+      ADMIN_EMAIL.toLowerCase()
+    ) {
+
+      alert(
+        "Access denied.\n\n" +
+        "This Google account is not authorized."
+      );
+
+      await signOut(auth);
+
+      return;
+
+    }
+
+
+    loginSection.style.display = "none";
+
+    dashboard.style.display = "block";
+
+    logoutBtn.style.display = "block";
+
+    loggedInUser.textContent =
+      "Logged in as: " + user.email;
+
+
+    await loadResponses();
+
+  });
+
+
+  // ==========================================
+  // LOGOUT
+  // ==========================================
+
+  logoutBtn.addEventListener("click", async () => {
+
+    await signOut(auth);
+
+  });
+
+
+  // ==========================================
+  // LOAD FIRESTORE RESPONSES
+  // ==========================================
+
+  async function loadResponses() {
+
+    loading.style.display = "block";
+
+    errorBox.style.display = "none";
+
+    empty.style.display = "none";
+
+
+    try {
+
+      console.log("Loading surveyResponses...");
+
+
+      const responsesQuery = query(
+
+        collection(db, "surveyResponses"),
+
+        orderBy("createdAt", "desc")
+
+      );
+
+
+      const snapshot =
+        await getDocs(responsesQuery);
+
+
+      console.log(
+        "Firestore documents:",
+        snapshot.size
+      );
+
+
+      allResponses = [];
+
+
+      snapshot.forEach((doc) => {
+
+        allResponses.push({
+
+          id: doc.id,
+
+          ...doc.data()
+
+        });
+
+      });
+
+
+      updateStats();
+
+      displayResponses(allResponses);
+
+
+    } catch (error) {
+
+      console.error(
+        "Firestore Read Error:",
+        error
+      );
+
+
+      errorBox.style.display = "block";
+
+      errorBox.textContent =
+        "Could not load responses.\n\n" +
+        "Code: " + (error.code || "unknown") +
+        "\n\nMessage: " +
+        (error.message || error);
+
+
+      responsesContainer.innerHTML = "";
+
+    }
+
+
+    loading.style.display = "none";
+
+  }
+
+
+  // ==========================================
+  // UPDATE STATS
+  // ==========================================
+
+  function updateStats() {
+
+    document.getElementById("totalResponses")
+      .textContent = allResponses.length;
+
+
+    const jnvs = new Set();
+
+    const batches = new Set();
+
+    const cities = new Set();
+
+
+    allResponses.forEach(response => {
+
+      if (response.jnv) {
+
+        jnvs.add(
+          String(response.jnv).trim()
+        );
+
+      }
+
+
+      if (response.batch) {
+
+        batches.add(
+          String(response.batch).trim()
+        );
+
+      }
+
+
+      if (response.city) {
+
+        cities.add(
+          String(response.city).trim()
+        );
+
+      }
+
+    });
+
+
+    document.getElementById("totalJNVs")
+      .textContent = jnvs.size;
+
+
+    document.getElementById("totalBatches")
+      .textContent = batches.size;
+
+
+    document.getElementById("totalCities")
+      .textContent = cities.size;
+
+  }
+
+
+  // ==========================================
+  // DISPLAY RESPONSES
+  // ==========================================
+
+  function displayResponses(responses) {
+
+    responsesContainer.innerHTML = "";
+
+
+    if (responses.length === 0) {
+
+      empty.style.display = "block";
+
+      return;
+
+    }
+
+
+    empty.style.display = "none";
+
+
+    responses.forEach((response, index) => {
+
+      const card =
+        document.createElement("div");
+
+      card.className = "response-card";
+
+
+      const name =
+        response.name || "Unnamed";
+
+      const jnv =
+        response.jnv || "JNV not provided";
+
+      const batch =
+        response.batch || "Batch not provided";
+
+      const city =
+        response.city || "City not provided";
+
+
+      const header =
+        document.createElement("div");
+
+      header.className =
+        "response-header";
+
+
+      header.innerHTML = `
+
+        <div>
+
+          <div class="person-name">
+            ${escapeHTML(name)}
+          </div>
+
+          <div class="person-info">
+            ${escapeHTML(jnv)}
+            •
+            ${escapeHTML(batch)}
+            •
+            ${escapeHTML(city)}
+          </div>
+
+        </div>
+
+        <div>
+          ▼
+        </div>
+
+      `;
+
+
+      const answers =
+        document.createElement("div");
+
+      answers.className = "answers";
+
+
+      // Show every field stored in Firestore
+      Object.entries(response).forEach(
+        ([key, value]) => {
+
+          if (key === "id") return;
+
+          if (key === "createdAt") return;
+
+
+          let displayValue = value;
+
+
+          if (Array.isArray(value)) {
+
+            displayValue =
+              value.join(", ");
+
+          }
+
+
+          if (
+            value &&
+            typeof value === "object" &&
+            !Array.isArray(value)
+          ) {
+
+            displayValue =
+              JSON.stringify(value);
+
+          }
+
+
+          const answer =
+            document.createElement("div");
+
+          answer.className = "answer";
+
+
+          answer.innerHTML = `
+
+            <div class="question">
+              ${escapeHTML(formatKey(key))}
+            </div>
+
+            <div class="answer-value">
+              ${escapeHTML(
+                String(displayValue ?? "")
+              )}
+            </div>
+
+          `;
+
+
+          answers.appendChild(answer);
+
+        }
+      );
+
+
+      header.addEventListener("click", () => {
+
+        if (
+          answers.style.display === "block"
+        ) {
+
+          answers.style.display = "none";
+
+        } else {
+
+          answers.style.display = "block";
+
+        }
+
+      });
+
+
+      card.appendChild(header);
+
+      card.appendChild(answers);
+
+      responsesContainer.appendChild(card);
+
+    });
+
+  }
+
+
+  // ==========================================
+  // SEARCH
+  // ==========================================
+
+  searchInput.addEventListener(
+    "input",
+    () => {
+
+      const search =
+        searchInput.value
+          .toLowerCase()
+          .trim();
+
+
+      if (!search) {
+
+        displayResponses(allResponses);
+
+        return;
+
+      }
+
+
+      const filtered =
+        allResponses.filter(response => {
+
+          return (
+
+            String(response.name || "")
+              .toLowerCase()
+              .includes(search)
+
+            ||
+
+            String(response.jnv || "")
+              .toLowerCase()
+              .includes(search)
+
+            ||
+
+            String(response.batch || "")
+              .toLowerCase()
+              .includes(search)
+
+            ||
+
+            String(response.city || "")
+              .toLowerCase()
+              .includes(search)
+
+          );
+
+        });
+
+
+      displayResponses(filtered);
+
+    }
+  );
+
+
+  // ==========================================
+  // FORMAT FIRESTORE FIELD NAMES
+  // ==========================================
+
+  function formatKey(key) {
+
+    return key
+
+      .replace(/([A-Z])/g, " $1")
+
+      .replace(/^./, char =>
+        char.toUpperCase()
+      );
+
+  }
+
+
+  // ==========================================
+  // SECURITY: ESCAPE HTML
+  // ==========================================
+
+  function escapeHTML(value) {
+
+    return String(value)
+
+      .replace(/&/g, "&amp;")
+
+      .replace(/</g, "&lt;")
+
+      .replace(/>/g, "&gt;")
+
+      .replace(/"/g, "&quot;")
+
+      .replace(/'/g, "&#039;");
+
+  }
+
+</script>
+
+</body>
+</html>
